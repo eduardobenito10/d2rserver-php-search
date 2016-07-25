@@ -1,0 +1,54 @@
+body{
+    font-family: 'Roboto', sans-serif;
+    color: #666;
+}
+
+.facetas{
+    max-width: 200px;
+    padding: 5px;
+}
+
+.faceta-filtro{
+    display: block;
+    cursor: pointer;
+}
+
+.faceta-header{
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.faceta-header i{
+    float: right;
+    margin-top: 3px;
+}
+
+.resultados{
+    min-height: 600px;
+    padding: 15px;
+}
+
+.resultados .pagination{
+    margin: 5px 0px;
+}
+
+.resultado{
+    display: block;
+    margin: 15px 0px;
+}
+
+.resultado h4{
+    margin-bottom: 5px; 
+}
+
+.resultado .tipo{
+    color: #aaa;
+    font-style: italic;
+}
+
+.query{
+    bottom: 0px;
+    margin-right: auto;
+    margin-left: auto;
+}

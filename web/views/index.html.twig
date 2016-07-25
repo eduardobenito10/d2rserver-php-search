@@ -1,0 +1,72 @@
+{# empty Twig template #}
+{% include 'base.html.twig' %}
+<div class="container-fluid">
+    {% if gruposFacetados is defined %}
+        {% include 'facetas.html.twig' %}
+    {% endif %}
+
+    <div class="col-md-10">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <form action="#" method="get">
+                        <div class="input-group col-md-12">
+                            <input type="text" id="q" name="q" value="{{q}}" class="form-control input-lg" placeholder="Buscar" />
+                            <span class="input-group-btn">
+                                <button class="btn btn-info btn-lg" type="submit">
+                                    <i class="glyphicon glyphicon-search"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="resultados">
+                <div class="row">
+                    <div class="col-md-5">
+                        <h4>{{total}} resultados</h4>        
+                    </div>
+                    <div class="col-md-7 text-right">
+                        {% include 'pagination.html.twig' with {
+                    currentFilters: { myFilter: filtervariables },
+                    currentPage: page,
+                    paginationPath: "",
+                    lastPage: totalPages,
+                    showAlwaysFirstAndLast: true
+                } %}
+                    </div>
+                </div>
+
+                {% for resultado in resultados %}
+                    <div class="resultado">
+                        <h4><a href="{{resultado.url}}">{{resultado.label}}</a></h4>
+                        <span class="tipo">{{resultado.type}}</span>
+                    </div>
+                {% else %}
+                    <h2>No se han encontrado resultados.</h2>
+                {% endfor %}
+                {% if ficha is defined %}
+                    <div class="ficha"></div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-5">
+                        
+                    </div>
+                    <div class="col-md-7 col-md-offset-5 text-right">
+                        {% include 'pagination.html.twig' with {
+                    currentFilters: { myFilter: filtervariables },
+                    currentPage: page,
+                    paginationPath: "",
+                    lastPage: totalPages,
+                    showAlwaysFirstAndLast: true
+                } %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="query">Consulta ejecutada: <pre>{{query}}</pre></div>
+        </div>
+    </div>
+</div>

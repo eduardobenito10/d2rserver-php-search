@@ -1,0 +1,32 @@
+<div class="col-md-2 facetas">
+
+    {% for grupo in gruposFacetados %}
+        <div class="faceta-header">
+            <div data-toggle="collapse" href="#collapse_{{grupo.id}}" aria-expanded="false" aria-controls="collapse_{{grupo.id}}">
+                <b>{{grupo.nombre}}</b> <i class="fa fa-minus-square-o" aria-hidden="true"></i>
+            </div>
+        </div>
+        <div class="collapse in" id="collapse_{{grupo.id}}">
+            {% for key,faceta in grupo.facetas %}
+                {% if grupo.tipo == 'intervalo' %}
+                    <div class="faceta-filtro" data-min="{{faceta.min}}" data-max="{{faceta.max}}">
+                        <input type="checkbox" {% if key in filtros %} checked="checked" {% endif %}></input>
+                        <span>{{faceta.texto}}</span>
+                    </div>
+                {% else%}
+                    <a class="faceta-filtro" href="" data-filtro="{{faceta.filtro}}">{{faceta.texto}}</a>    
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endfor%}
+</div>
+
+<script>
+    $('.collapse').on('shown.bs.collapse', function () {
+        $(".fa").removeClass("fa-plus-square-o").addClass("fa-minus-square-o");
+    });
+
+    $('.collapse').on('hidden.bs.collapse', function () {
+        $(".fa").removeClass("fa-minus-square-o").addClass("fa-plus-square-o");
+    });
+</script>

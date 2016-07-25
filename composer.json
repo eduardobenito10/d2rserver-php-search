@@ -1,6 +1,9 @@
 {
     "require": {
         "silex/silex": "~2.0",
-        "guzzlehttp/guzzle": "6.*"
+        "guzzlehttp/guzzle": "6.*",
+        "predis/predis": "^1.1",
+        "twig/twig": "^1.24",
+        "components/font-awesome": "^4.6"
     }
 }
