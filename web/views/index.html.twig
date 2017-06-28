@@ -1,5 +1,6 @@
 {# empty Twig template #}
-{% include 'base.html.twig' %}
+{% extends  'base.html.twig' %}
+{% block body %}
 <div class="container-fluid">
     {% if gruposFacetados is defined %}
         {% include 'facetas.html.twig' %}
@@ -11,62 +12,109 @@
                 <div class="col-md-6">
                     <form action="#" method="get">
                         <div class="input-group col-md-12">
-                            <input type="text" id="q" name="q" value="{{q}}" class="form-control input-lg" placeholder="Buscar" />
+                            <input type="text" id="q" name="q" value="{{q|default("")}}" class="form-control input-lg" placeholder="Buscar" />
                             <span class="input-group-btn">
-                                <button class="btn btn-info btn-lg" type="submit">
+                                <button class="btn btn-info btn-lg" id="btn-buscar" type="submit">
                                     <i class="glyphicon glyphicon-search"></i>
                                 </button>
                             </span>
                         </div>
                     </form>
                 </div>
+                <div class="col-md-6">
+                    <div data-toggle="collapse" href="#collapse_consultas" aria-expanded="false" aria-controls="collapse_consultas">
+                        <a class="btn btn-lg">Consultas útiles</a></i>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="collapse" id="collapse_consultas">
+                        {% for key,consulta in listaConsultas %}
+                            <h4><a href="?c={{key}}">{{consulta}}</a></h4>
+                                {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+
             </div>
 
-            <div class="resultados">
-                <div class="row">
-                    <div class="col-md-5">
-                        <h4>{{total}} resultados</h4>        
-                    </div>
-                    <div class="col-md-7 text-right">
-                        {% include 'pagination.html.twig' with {
+            {% if resultados is defined %}
+                <div class="resultados">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h4>{{total}} resultados</h4>        
+                        </div>
+                        <div class="col-md-7 text-right">
+                            {% include 'pagination.html.twig' with {
                     currentFilters: { myFilter: filtervariables },
                     currentPage: page,
                     paginationPath: "",
                     lastPage: totalPages,
                     showAlwaysFirstAndLast: true
                 } %}
+                        </div>
                     </div>
-                </div>
 
-                {% for resultado in resultados %}
-                    <div class="resultado">
-                        <h4><a href="{{resultado.url}}">{{resultado.label}}</a></h4>
-                        <span class="tipo">{{resultado.type}}</span>
-                    </div>
-                {% else %}
-                    <h2>No se han encontrado resultados.</h2>
-                {% endfor %}
-                {% if ficha is defined %}
-                    <div class="ficha"></div>
-                {% endif %}
+                    {% for resultado in resultados %}
+                        <div class="resultado">
+                            <h4><a href="{{resultado.url}}">{{resultado.label}}</a></h4>
+                            <span class="tipo">{{resultado.type}}</span>
+                        </div>
+                    {% else %}
+                        <h2>No se han encontrado resultados.</h2>
+                    {% endfor %}
 
-                <div class="row">
-                    <div class="col-md-5">
-                        
-                    </div>
-                    <div class="col-md-7 col-md-offset-5 text-right">
-                        {% include 'pagination.html.twig' with {
+                    {% if detalle is defined %}
+                        {% set resultado = resultados[0]%}
+                        {% if resultado.type == "http://localhost:2020/resource/vocab/actividad" %}
+                            {% include 'detalle/actividad.html.twig' %}
+                        {% elseif resultado.type == "http://localhost:2020/resource/vocab/persona" %}
+                            {% include 'detalle/persona.html.twig' %}
+                        {% elseif resultado.type == "http://localhost:2020/resource/vocab/trabajos_academicos" %}
+                            {% include 'detalle/trabajo_academico.html.twig' %}
+                        {% endif %}
+                    {% endif %}
+
+
+                    <div class="row">
+                        <div class="col-md-5">
+
+                        </div>
+                        <div class="col-md-7 col-md-offset-5 text-right">
+                            {% include 'pagination.html.twig' with {
                     currentFilters: { myFilter: filtervariables },
                     currentPage: page,
                     paginationPath: "",
                     lastPage: totalPages,
                     showAlwaysFirstAndLast: true
                 } %}
+                        </div>
                     </div>
                 </div>
+                <div class="query">Consulta ejecutada: <pre>{{query}}</pre></div>
             </div>
+        {% endif %}
 
-            <div class="query">Consulta ejecutada: <pre>{{query}}</pre></div>
-        </div>
+        {% if consulta is defined %}
+            <h2>{{consulta.titulo}}</h5>
+                <table class="table table-bordered table-striped table-condensed table-hover dataTableConsulta">
+                    <thead>
+                        <tr>
+                            <th>Valor</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in consulta.rows %}
+                            <tr>
+                                <td>{{row['name']}} </td>
+                                <td>{{row['count']}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
     </div>
 </div>
+{% endblock %}

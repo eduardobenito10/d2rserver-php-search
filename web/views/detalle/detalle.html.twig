@@ -1,0 +1,16 @@
+<table class="table">
+    <thead>
+        <tr>
+            <th>Propiedad</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for propiedad in detalle %}
+            <tr>
+                <td>{{propiedad['property']}} </td>
+                <td>{{propiedad['hasValue']}}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

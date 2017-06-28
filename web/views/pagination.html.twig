@@ -7,7 +7,7 @@
         {# the number of pages that are displayed around the active page #}
         {% set nearbyPagesLimit = 2 %}
 
-        {% set paginationPath = "?q="~q~"&page="%}
+        {% set paginationPath = path(global.request.attributes.get('_route'), global.request.query.all) ~ '&page=' %}
 
         <div>
             <ul class="pagination">

@@ -1,32 +1,95 @@
 <div class="col-md-2 facetas">
 
-    {% for grupo in gruposFacetados %}
+    <div class="faceta">
         <div class="faceta-header">
-            <div data-toggle="collapse" href="#collapse_{{grupo.id}}" aria-expanded="false" aria-controls="collapse_{{grupo.id}}">
-                <b>{{grupo.nombre}}</b> <i class="fa fa-minus-square-o" aria-hidden="true"></i>
+            <div data-toggle="collapse" href="#collapse_type" aria-expanded="false" aria-controls="collapse_type">
+                <b>TIPO DE CONTENIDO</b> <i class="fa fa-minus-square-o" aria-hidden="true"></i>
             </div>
         </div>
-        <div class="collapse in" id="collapse_{{grupo.id}}">
-            {% for key,faceta in grupo.facetas %}
-                {% if grupo.tipo == 'intervalo' %}
-                    <div class="faceta-filtro" data-min="{{faceta.min}}" data-max="{{faceta.max}}">
-                        <input type="checkbox" {% if key in filtros %} checked="checked" {% endif %}></input>
-                        <span>{{faceta.texto}}</span>
-                    </div>
-                {% else%}
-                    <a class="faceta-filtro" href="" data-filtro="{{faceta.filtro}}">{{faceta.texto}}</a>    
+        <div class="collapse in" id="collapse_type">
+            {% if type is not empty %}
+                {% set url = path(global.request.attributes.get('_route'), global.request.query.all|merge({'type': '','filtros': '', 'page': 1})) %}
+                <div class="tipo">
+                    <a href="{{url}}"> <i class="fa fa-times" aria-hidden="true"></i></a> {{type|upper}}
+                </div>
+            {% else %}
+                {% for _type in listTypes %}
+                    {% set nombreTipo = _type.type|replace({'http://localhost:2020/resource/vocab/': ''}) %}
+                    {% set url = path(global.request.attributes.get('_route'), global.request.query.all|merge({'type': nombreTipo,'filtros': '', 'page': 1})) %}
+                    <a class="filtro" href="{{url}}">{{nombreTipo|upper}} <span class="badge">{{_type.count}}</span></a>    
+                    {% endfor %}
                 {% endif %}
-            {% endfor %}
+        </div>
+    </div>
+
+    {% for grupo in gruposFacetados %}
+        <div class="faceta">
+            <div class="faceta-header">
+                <div data-toggle="collapse" href="#collapse_{{grupo.id}}" aria-expanded="false" aria-controls="collapse_{{grupo.id}}">
+                    <b>{{grupo.titulo}}</b> <i class="fa fa-minus-square-o" aria-hidden="true"></i>
+                </div>
+            </div>
+            <div class="collapse in" id="collapse_{{grupo.id}}">
+                {% set view_more = false %}
+                {% for faceta in grupo.facetas %}
+                    {% if grupo.tipo == 'intervalo' %}
+                        <div class="filtro" data-min="{{faceta.min}}" data-max="{{faceta.max}}">
+                            <input type="checkbox" {% if faceta.texto in filtros[key] %} checked="checked" {% endif %}></input>
+                            <span>{{faceta.texto}}</span><span class="badge">{{faceta.count}}</span>
+                        </div>
+                    {% else%}
+                        {% set filters = global.request.query.get('filtros') %}
+                        {% if filtros is not empty and filtros[grupo.id] is defined and faceta.value in filtros[grupo.id] %}
+                            {% set checked = true %}
+                            {% set filtersFacet = [] %}
+                            {% for value in filters[grupo.id] %}
+                                {% if value != faceta.value %}
+                                    {% set filtersFacet = filtersFacet|merge([value]) %}
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            {% set checked = false %}
+                            {% if filtros[grupo.id] is defined %}
+                                {% set filtersFacet = filters[grupo.id]|merge({(loop.index0): faceta.value}) %}
+                            {% else %}
+                                {% set filtersFacet = [faceta.value] %}
+                            {% endif %}
+                        {% endif %}
+                        {% if filters is empty %}
+                            {% set filters = {(grupo.id):filtersFacet} %}
+                        {% else %}
+                            {% set filters = filters|merge({(grupo.id):filtersFacet})%}
+                        {% endif %}
+
+                        {% set url = path(global.request.attributes.get('_route'), global.request.query.all|merge({'filtros': filters, 'page':1})) %}
+                        <div class="filtro">
+                            <input type="checkbox" {% if checked is not empty %} checked="checked" {% endif %}></input>
+                            <a href="{{url}}" data-filtro="{{faceta.key}}">{{faceta.value}}</a> <span class="badge">{{faceta.count}}</span>
+                        </div>
+                    {% endif %}
+
+                    {% if loop.index == 5 and loop.length > 5%}
+                        {% set view_more = true %}
+                        <div>
+                            <div class="collapse" id="view_more_{{grupo.id}}"> <!-- abro el div view_more -->
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if view_more %}
+                        </div></div> <!-- cierro el div view_more -->
+                    <div data-toggle="collapse" href="#view_more_{{grupo.id}}" aria-expanded="false" aria-controls="collapse_type">Ver más</div>
+                {% endif %}
+            </div>
         </div>
     {% endfor%}
 </div>
 
 <script>
-    $('.collapse').on('shown.bs.collapse', function () {
-        $(".fa").removeClass("fa-plus-square-o").addClass("fa-minus-square-o");
+    $('.faceta >.collapse').on('shown.bs.collapse', function () {
+        $(this).prev(".faceta-header").find(".fa").removeClass("fa-plus-square-o").addClass("fa-minus-square-o");
     });
 
-    $('.collapse').on('hidden.bs.collapse', function () {
-        $(".fa").removeClass("fa-minus-square-o").addClass("fa-plus-square-o");
+    $('.faceta >.collapse').on('hidden.bs.collapse', function () {
+        $(this).prev(".faceta-header").find(".fa").removeClass("fa-minus-square-o").addClass("fa-plus-square-o");
     });
 </script>
